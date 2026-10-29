@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<!--
+  LunaCycle v1.3
+  Copyright (C) 2026 I contributori di LunaCycle
+  SPDX-License-Identifier: GPL-3.0-or-later
+
+  Questo programma è software libero: puoi ridistribuirlo e/o modificarlo
+  secondo i termini della GNU General Public License pubblicata dalla Free
+  Software Foundation, versione 3 della Licenza o (a tua scelta) qualsiasi
+  versione successiva.
+
+  Questo programma è distribuito nella speranza che sia utile, ma SENZA
+  ALCUNA GARANZIA; senza neppure la garanzia implicita di COMMERCIABILITÀ o
+  IDONEITÀ PER UNO SCOPO PARTICOLARE. Vedi la GNU GPL per maggiori dettagli.
+  Dovresti aver ricevuto una copia della GNU GPL insieme a questo programma
+  (file LICENSE); in caso contrario vedi <https://www.gnu.org/licenses/>.
+-->
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FF6B9A">
+<meta name="color-scheme" content="dark">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LunaCycle">
+<meta name="format-detection" content="telephone=no, date=no">
+<link rel="apple-touch-icon" sizes="120x120" href="icons/icon-128.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="167x167" href="icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/icon-192.png">
+<meta name="description" content="LunaCycle: tracker del ciclo mestruale offline e privato / private offline menstrual cycle tracker">
+<link rel="icon" type="image/png" sizes="96x96" href="icons/icon-96.png">
+<title>LunaCycle</title>
+<style>
+*,::before,::after{box-sizing:border-box}h1,h2,h3,p,ul{margin:0}h1,h2,h3{font-size:inherit;font-weight:inherit}ul{list-style:none;padding:0}svg{display:block}i{font-style:normal}button{background:none;border:0;color:inherit;font:inherit;cursor:pointer}button:focus-visible,.pill:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--pur);outline-offset:2px}
+:root{--bg:#0F0A1A;--card:#1A122A;--line:#281E3A;--txt:#E6D6F5;--mut:#B098C8;--pink:#FF6B9A;--pur:#C77DFF;color-scheme:dark}
+*{-webkit-tap-highlight-color:transparent}
+html{overscroll-behavior-y:none;background:var(--bg)}
+html,body{color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overscroll-behavior-y:none}
+body{background:linear-gradient(180deg,var(--bg),#000000) fixed;margin:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:1.25rem;padding:1rem;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);}
+.pill{border:1px solid var(--line);border-radius:999px;padding:.5rem 1rem;font-size:.875rem;color:var(--mut);cursor:pointer;display:inline-flex;align-items:center;min-height:2.5rem;touch-action:manipulation;user-select:none;transition:all 0.2s ease}
+.pill:hover{border-color:var(--pink)}
+.pill.on{background:#ff408133;border-color:var(--pink);color:#fff}
+input,select,textarea{background:var(--bg);border:1px solid var(--line);border-radius:.75rem;padding:.6rem .7rem;width:100%;color:var(--txt);font-size:16px;-webkit-appearance:none;appearance:none;min-height:2.6rem}
+select{padding-right:2.2rem;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23B098C8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .8rem center}
+input[type=range]{-webkit-appearance:auto;appearance:auto;accent-color:var(--pink);padding:0;border:0;background:transparent;height:2.2rem}
+input[type=date]{color-scheme:dark}
+.btn{background:linear-gradient(90deg,var(--pink),var(--pur));color:#fff;border-radius:.9rem;padding:.85rem 1.2rem;font-weight:600;touch-action:manipulation;min-height:3rem;transition:filter 0.3s ease, transform 0.15s ease}
+.btn:hover{filter:brightness(1.1)}
+.btn:active{transform:scale(.98)}
+.btn2{border:1px solid var(--line);border-radius:.9rem;padding:.75rem 1.1rem;color:var(--mut);touch-action:manipulation;min-height:3rem;transition:background 0.3s ease, transform 0.15s ease}
+.btn2:hover{background:#ffffff0d}
+.btn2:active{transform:scale(.98)}
+.sub{color:var(--mut);font-size:.75rem}
+.muted{color:var(--mut)}
+nav button{background:var(--card);padding:.5rem .3rem;min-height:3.5rem;flex:1;touch-action:manipulation;color:var(--mut);line-height:1.5;transition:color 0.2s ease, background 0.2s ease;border-radius:0.5rem}
+nav button:hover{color:#fff;background:#ffffff0d}
+nav button:active{transform:scale(.95)}
+nav button.act{color:var(--pink)}
+.min-h-screen{min-height:100vh}.sticky{position:sticky}.fixed{position:fixed}.relative{position:relative}.absolute{position:absolute}.top-0{top:0}.bottom-0{bottom:0}.inset-x-0{left:0;right:0}.inset-0{inset:0}.z-30{z-index:30}.px-4{padding-inline:1rem}.px-6{padding-inline:1.5rem}.py-1{padding-block:.25rem}.py-2{padding-block:.5rem}.py-3{padding-block:.75rem}.py-6{padding-block:1.5rem}.p-4{padding:1rem}.border-b{border-bottom:1px solid}.border-t{border-top:1px solid}.font-bold,b{font-weight:700}.font-semibold{font-weight:600}.text-xs{font-size:.75rem}.text-sm{font-size:.875rem}.text-lg{font-size:1.125rem}.text-2xl{font-size:1.5rem}.max-w-2xl{max-width:42rem}.mx-auto{margin-inline:auto}.hidden{display:none}.flex{display:flex}.grid{display:grid}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.flex-1{flex:1 1 0}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.justify-around{justify-content:space-around}.grid-cols-2{grid-template-columns:repeat(2,1fr)}.grid-cols-3{grid-template-columns:repeat(3,1fr)}.grid-cols-7{grid-template-columns:repeat(7,1fr)}.gap-1{gap:.25rem}.gap-2{gap:.5rem}.gap-3{gap:.75rem}.gap-x-4{column-gap:1rem}.gap-y-1{row-gap:.25rem}.space-y-1>*+*{margin-top:.25rem}.space-y-2>*+*{margin-top:.5rem}.space-y-3>*+*{margin-top:.75rem}.space-y-4>*+*{margin-top:1rem}.text-center{text-align:center}.text-left{text-align:left}.text-right{text-align:right}.w-64{width:16rem}.h-64{height:16rem}.w-full{width:100%}.h-full{height:100%}.mt-1{margin-top:.25rem}.mt-2{margin-top:.5rem}.mb-1{margin-bottom:.25rem}.mb-3{margin-bottom:.75rem}.rounded-xl{border-radius:.75rem}.rounded-full{border-radius:9999px}.aspect-square{aspect-ratio:1}.capitalize{text-transform:capitalize}.left-1\/2{left:50%}.-translate-x-1\/2{transform:translateX(-50%)}.bottom-24{bottom:6rem}.opacity-0{opacity:0}.transition{transition:opacity .2s}
+@supports(height:100dvh){.min-h-screen{min-height:100dvh}}
+.sect{padding-top:1rem;border-top:1px solid var(--line)}
+#report{display:none}
+@page{size:A4;margin:14mm}
+@media print{
+html,body{background:#fff!important;color:#111!important;padding:0!important}
+body>*:not(#report){display:none!important}
+#report{display:block!important;font:10.5pt/1.4 system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:#111;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#report h1{font-size:18pt;font-weight:700;color:#7a1f4d;margin:0 0 2pt}
+#report h2{font-size:11.5pt;font-weight:700;color:#4a2a7a;margin:14pt 0 5pt;padding-bottom:2pt;border-bottom:1.5px solid #c9b8e6}
+#report .rp-sub{font-size:9pt;color:#555}
+#report .rp-sec{break-inside:avoid}
+#report table{width:100%;border-collapse:collapse;font-size:9.5pt}
+#report th,#report td{border:1px solid #cfc6dc;padding:3pt 6pt;text-align:left;vertical-align:top}
+#report th{background:#f1ebf8;font-weight:600}
+#report tr{break-inside:avoid}
+#report .rp-kv th{width:55%;background:#faf7fd;font-weight:500}
+#report .rp-two{display:flex;gap:14pt}#report .rp-two>div{flex:1}
+#report svg{width:100%;height:auto}
+#report .rp-disc{margin-top:16pt;padding-top:6pt;border-top:1px solid #bbb;font-size:8.5pt;color:#555}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body class="min-h-screen">
+<header class="sticky top-0 z-30 border-b" style="background:var(--bg);border-color:var(--line);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);padding:calc(.75rem + env(safe-area-inset-top,0px)) max(1rem,env(safe-area-inset-right,0px)) .75rem max(1rem,env(safe-area-inset-left,0px))">
+  <div class="max-w-2xl mx-auto">
+  <h1 class="font-bold text-lg" style="background:linear-gradient(90deg,var(--pink),var(--pur));-webkit-background-clip:text;background-clip:text;color:transparent;width:fit-content">LunaCycle</h1>
+  <p class="sub" data-i18n="app.sub"></p>
+  </div>
+</header>
+<main class="max-w-2xl mx-auto space-y-4" style="padding:1rem max(1rem,env(safe-area-inset-right,0px)) calc(6rem + env(safe-area-inset-bottom,0px)) max(1rem,env(safe-area-inset-left,0px))">
+  <section id="v-oggi" class="space-y-4"></section>
+  <section id="v-calendario" class="space-y-4 hidden"></section>
+  <section id="v-diario" class="space-y-4 hidden"></section>
+  <section id="v-stats" class="space-y-4 hidden"></section>
+  <section id="v-impost" class="space-y-4 hidden"></section>
+</main>
+<nav class="fixed bottom-0 inset-x-0 border-t flex justify-around text-xs" style="background:var(--card);border-color:var(--line);padding:.5rem env(safe-area-inset-right,0px) calc(.5rem + env(safe-area-inset-bottom,0px)) env(safe-area-inset-left,0px)">
+  <button data-t="oggi"><span aria-hidden="true">🌙</span><br><span data-i18n="nav.oggi"></span></button><button data-t="calendario"><span aria-hidden="true">📅</span><br><span data-i18n="nav.calendario"></span></button><button data-t="diario"><span aria-hidden="true">✏️</span><br><span data-i18n="nav.diario"></span></button><button data-t="stats"><span aria-hidden="true">📈</span><br><span data-i18n="nav.stats"></span></button><button data-t="impost"><span aria-hidden="true">⚙️</span><br><span data-i18n="nav.impost"></span></button>
+</nav>
+<div id="report" aria-hidden="true"></div>
+<div id="toast" role="status" aria-live="polite" class="fixed left-1/2 -translate-x-1/2 px-4 py-2 rounded-xl text-sm opacity-0 transition" style="bottom:calc(6rem + env(safe-area-inset-bottom,0px));max-width:90vw;pointer-events:none;background:#27272f;border:1px solid var(--line)"></div>
+
+<!-- ============ ENGINE: modulo matematico/statistico isolato (nessun accesso al DOM, nessun testo localizzato) ============ -->
+<script id="engine">
+const CycleEngine=(()=>{
+const DAY=864e5, BLEED=['leggero','medio','abbondante'], MINCYCLE=15;
+const p=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const f=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const add=(s,n)=>{const d=p(s);d.setDate(d.getDate()+n);return f(d)};
+const diff=(a,b)=>Math.round((p(a)-p(b))/DAY);
+// z per intervallo bilaterale (Abramowitz-Stegun 26.2.23)
+function zScore(conf){const q=(1-conf)/2,t=Math.sqrt(-2*Math.log(q));return t-(2.515517+.802853*t+.010328*t*t)/(1+1.432788*t+.189269*t*t+.001308*t**3)}
+// Inizio mestruazione = primo giorno con flusso >= leggero (lo spotting non conta).
+// Nuovo ciclo se: pausa > 3 gg dall'ultimo giorno di flusso E almeno MINCYCLE gg dall'ultimo inizio
+// (così un diario con giorni saltati durante le mestruazioni non spezza il ciclo in due).
+function periodStarts(logs){let last=null,lastStart=null;const st=[];Object.keys(logs).sort().forEach(d=>{if(BLEED.includes(logs[d].flow)){if(last===null||(diff(d,last)>3&&diff(d,lastStart)>=MINCYCLE)){st.push(d);lastStart=d}last=d}});return st}
+// Ovulazione: LH+ (+1 gg) > rialzo BBT (regola 3 su 6) > ultimo giorno muco chiara d'uovo
+// method: 'lh' | 'bbt' | 'mucus'
+function detect(logs,s,e){
+  const days=Object.keys(logs).filter(d=>d>=s&&d<e).sort();
+  const lh=days.find(d=>logs[d].lh==='positivo');
+  const T=days.filter(d=>+logs[d].temp>0);let shift=null;
+  for(let i=6;i<T.length-2;i++){
+    if(diff(T[i+2],T[i])>4||diff(T[i],T[i-6])>14)continue;   // le misure devono essere ravvicinate: giorni mancanti non fanno da "rialzo"
+    const base=Math.max(...T.slice(i-6,i).map(d=>+logs[d].temp));
+    const h=[0,1,2].map(k=>+logs[T[i+k]].temp);
+    if(h.every(x=>x>base)&&h[2]>=base+.2){shift={first:T[i],cover:+(base+.05).toFixed(2),ov:add(T[i],-1)};break}
+  }
+  // Il muco chiara d'uovo conta come ovulazione solo dopo il "picco": serve un giorno successivo con muco meno fertile
+  const pk=days.filter(d=>logs[d].mucus==='chiara_uovo').pop();
+  const peak=pk&&days.some(d=>d>pk&&logs[d].mucus&&logs[d].mucus!=='chiara_uovo'&&logs[d].mucus!=='acquoso')?pk:undefined;
+  let r=null;
+  if(lh)r={date:add(lh,1),method:'lh'};else if(shift)r={date:shift.ov,method:'bbt'};else if(peak)r={date:peak,method:'mucus'};
+  if(!r&&!shift)return null;
+  return r?{...r,shift,lh,peak,bbtConfirmed:!!shift}:{date:null,shift};
+}
+function analyze(allLogs,S,today){
+  const logs={};Object.keys(allLogs).forEach(d=>{if(d<=today)logs[d]=allLogs[d]});   // i giorni futuri (es. backup importato) non devono influenzare i calcoli
+  const starts=periodStarts(logs);
+  // data manuale: usata se non c'è storico, oppure se è una mestruazione più recente dell'ultima registrata
+  if(S.lastPeriodDate&&S.lastPeriodDate<=today&&(!starts.length||diff(S.lastPeriodDate,starts[starts.length-1])>=MINCYCLE))starts.push(S.lastPeriodDate);
+  const cycles=[];
+  for(let i=0;i<starts.length-1;i++){
+    const s=starts[i],e=starts[i+1],len=diff(e,s),o=detect(logs,s,e),auto=len<21||len>45,man=S.anomalous[s];
+    cycles.push({start:s,end:e,len,auto,anomalous:man===undefined?auto:man,ov:o&&o.date,method:o&&o.date?o.method:null,luteal:o&&o.date?diff(e,o.date):null});
+  }
+  const L=cycles.filter(c=>!c.anomalous).map(c=>c.len),n=L.length,al=S.alpha;
+  let ema=n?L[0]:S.cycleLength;for(let i=1;i<n;i++)ema=al*L[i]+(1-al)*ema;   // EMA: peso maggiore ai cicli recenti
+  let sd0=2.5;
+  if(n>=2){const w=L.map((_,i)=>Math.pow(1-al,n-1-i)),sw=w.reduce((a,b)=>a+b),m=L.reduce((a,x,i)=>a+w[i]*x,0)/sw;sd0=Math.sqrt(L.reduce((a,x,i)=>a+w[i]*(x-m)**2,0)/sw)}
+  const sd=Math.sqrt((n*sd0*sd0+2*6.25)/(n+2));  // shrinkage verso prior con pochi dati
+  // fase luteale individuale. src: {k:'std'|'manual'|'measured',n}
+  const lv=cycles.filter(c=>!c.anomalous&&c.luteal>=8&&c.luteal<=20).map(c=>c.luteal);
+  let lut=14,lsd=1.5,src={k:'std'};
+  if(S.lutealMode==='manual'){lut=S.lutealManual;lsd=1;src={k:'manual'}}
+  else if(lv.length){const k=lv.length,sum=lv.reduce((a,b)=>a+b,0),m=sum/k;lut=(sum+Math.max(0,3-k)*14)/Math.max(3,k);lsd=Math.max(1,k>1?Math.sqrt(lv.reduce((a,x)=>a+(x-m)**2,0)/(k-1)):1.5);src={k:'measured',n:k}}
+
+  // Fattori di variabilità legati a età e BMI
+  let ageFactor=1.0,weightFactor=1.0;
+  const age=parseFloat(S.age);
+  if(age>0){
+    if(age<19)ageFactor=1.0+(19-age)*0.015;                 // adolescenza
+    else if(age>=35&&age<40)ageFactor=1.0+(age-35)*0.02;    // premenopausa precoce
+    else if(age>=40)ageFactor=1.1+(age-40)*0.03;            // premenopausa avanzata
+    if(ageFactor>2.0)ageFactor=2.0;
+  }
+  const wt=parseFloat(S.weight),ht=parseFloat(S.height);
+  if(wt>0&&ht>0){
+    const hm=ht/100,bmi=wt/(hm*hm);
+    if(bmi<18.5)weightFactor=1.0+(18.5-bmi)*0.02;
+    else if(bmi>24.9)weightFactor=1.0+(bmi-24.9)*0.015;
+    if(weightFactor>1.5)weightFactor=1.5;
+  }
+  const finalSD=sd*ageFactor*weightFactor;
+
+  const out={today,starts,cycles,ema,sd:finalSD,n,lut,lsd,src,z:zScore(S.confidence),pred:null,segs:[]};
+  const cur=starts[starts.length-1];if(!cur)return out;
+  const Lr=Math.round(lut),co=detect(logs,cur,add(today,1)),conf=!!(co&&co.date);
+  let next,sig,ov;
+  if(conf){ov=co.date;next=add(ov,Lr);sig=Math.sqrt(lsd*lsd+.5)}
+  else{next=add(cur,Math.round(ema));sig=finalSD*Math.sqrt(1+1/(n+1));ov=add(next,-Lr)}
+  const w=Math.max(1,Math.ceil(out.z*sig)),ow=conf?0:Math.max(1,Math.ceil(out.z*finalSD));
+  out.pred={cur,next,sigma:sig,w,ci:[add(next,-w),add(next,w)],ov,ovCi:[add(ov,-ow),add(ov,ow)],ovConfirmed:conf,method:conf?co.method:null,bbtConfirmed:!!(co&&co.bbtConfirmed),
+    fertile:[add(ov,-5),add(ov,1)],pms:[add(next,-5),add(next,-1)],late:Math.max(0,diff(today,next)),shift:co&&co.shift};
+  cycles.forEach(c=>out.segs.push({s:c.start,e:c.end,ov:c.ov||add(c.end,-Lr)}));
+  out.segs.push({s:cur,e:next,ov});
+  let s=next;
+  // Ritardo: la data prevista è passata senza flusso registrato -> i giorni di ritardo restano "premestruali" e la proiezione riparte da domani
+  if(next<=today){out.segs.push({s:next,e:add(today,1),ov});s=add(today,1)}
+  for(let i=0;i<9;i++){const e=add(s,Math.max(15,Math.round(ema)));out.segs.push({s,e,ov:add(e,-Lr)});s=e}
+  return out;
+}
+function phase(a,S,date){
+  const g=a.segs.find(x=>x.s<=date&&date<x.e);if(!g)return null;
+  // Ritardo: la data prevista è passata ma nessun flusso è stato registrato -> le mestruazioni non sono iniziate
+  if(a.pred&&g.s===a.pred.next&&date<=a.today){const c=a.pred.cur;return{ph:'pms',day:diff(date,c)+1,len:diff(a.pred.next,c),ov:a.pred.ov}}
+  const day=diff(date,g.s)+1,len=diff(g.e,g.s);let ph;
+  if(day<=S.periodLength)ph='mestruale';else if(date===g.ov)ph='ovulazione';
+  else if(date>=add(g.ov,-5)&&date<=add(g.ov,1))ph='fertile';else if(date<g.ov)ph='follicolare';
+  else if(date>=add(g.e,-5))ph='pms';else ph='luteale';
+  return{ph,day,len,ov:g.ov};
+}
+return{analyze,phase,add,diff,f,p,zScore,periodStarts,detect};
+})();
+</script>
+
+<!-- ============ I18N ============ -->
+<script id="i18n">
+const I18N={
+it:{
+"app.sub":"Previsioni statistiche e sintotermiche · dati solo sul tuo dispositivo",
+"nav.oggi":"Oggi","nav.calendario":"Calendario","nav.diario":"Diario","nav.stats":"Statistiche","nav.impost":"Impostazioni",
+"u.days":"gg","u.years":"anni","u.daysLong":"giorni",
+"rep.btn":"Esporta report medico","rep.hint":"Si apre la finestra di stampa: scegli «Salva come PDF» per ottenere il file da portare al medico.",
+"rep.file":"report-medico","rep.title":"Report clinico del ciclo mestruale","rep.gen":"Generato il {d} · Periodo analizzato: {a} – {b}",
+"rep.profile":"Dati del profilo","rep.age":"Età","rep.weight":"Peso","rep.height":"Altezza","rep.bmi":"BMI","rep.na":"non indicato",
+"rep.sum":"Riepilogo cicli (ultimi {n})","rep.cycles":"Cicli analizzati","rep.valid":"Cicli usati per le medie (esclusi gli anomali)","rep.mean":"Durata media del ciclo","rep.range":"Minimo – massimo","rep.sd":"Deviazione standard","rep.reg":"Regolarità",
+"rep.reg.ok":"Regolare","rep.reg.mild":"Lievemente variabile","rep.reg.irr":"Irregolare","rep.reg.none":"Dati insufficienti (servono almeno 3 cicli)",
+"rep.out":"Cicli fuori dall'intervallo 24–38 giorni","rep.bleed":"Durata media del flusso","rep.lut":"Fase luteale media (da ovulazione rilevata)","rep.nodata":"dato non disponibile","rep.last":"Ultima mestruazione registrata","rep.next":"Prossima mestruazione stimata",
+"rep.reg.note":"Criterio: variazione tra il ciclo più corto e il più lungo ≤ 7 giorni = regolare, 8–9 = lievemente variabile, ≥ 10 = irregolare.",
+"rep.detail":"Dettaglio dei cicli","rep.c.start":"Inizio","rep.c.len":"Durata ciclo","rep.c.bleed":"Giorni di flusso","rep.c.ov":"Ovulazione (metodo)","rep.c.lut":"Fase luteale","rep.c.note":"Note","rep.anom":"Escluso dalle medie","rep.nocycles":"Nessun ciclo completo registrato nel periodo.",
+"rep.bbt":"Temperatura basale (ultimi 6 mesi)","rep.bbt.stats":"{n} misurazioni · media {m} °C · min {a} °C – max {b} °C","rep.bbt.none":"Temperatura basale non registrata (servono almeno 2 misurazioni).","rep.bbt.leg":"Linee rosse tratteggiate: inizio mestruazioni · linee verdi: ovulazione rilevata.",
+"rep.sym":"Sintomi ricorrenti (ultimi 6 mesi)","rep.sym.col":"Sintomo","rep.sym.days":"Giorni","rep.sym.of":"Giorni registrati nel periodo: {n}","rep.sym.none":"Nessun sintomo registrato nel periodo.",
+"rep.meds":"Farmaci / contraccettivi annotati","rep.meds.times":"{n} giorni · ultimo {d}","rep.meds.none":"Nessuna annotazione nel periodo.",
+"rep.disc":"Report generato automaticamente da LunaCycle a partire da dati inseriti dall'utente. Ha valore puramente informativo e statistico: non costituisce una diagnosi né sostituisce la valutazione di un medico.",
+"ph.mestruale":"Mestruazioni","ph.follicolare":"Fase follicolare","ph.fertile":"Finestra fertile","ph.ovulazione":"Ovulazione","ph.luteale":"Fase luteale","ph.pms":"Fase premestruale",
+"method.lh":"Test LH","method.bbt":"Rialzo BBT","method.mucus":"Muco fertile","method.cal":"Calendario + fase luteale",
+"lut.std":"standard (14 gg)","lut.manual":"manuale","lut.measured.one":"misurata su {n} ciclo","lut.measured.other":"misurata su {n} cicli",
+"today.start.title":"Inizia da qui","today.start.text":"Imposta la data dell'ultima mestruazione o registra il flusso nel diario.","today.start.btn":"Imposta data",
+"today.day":"Giorno {d} di ~{l}","today.day.over":"Giorno {d} del ciclo",
+"today.late.one":"Ritardo di {n} giorno","today.late.other":"Ritardo di {n} giorni",
+"today.due":"Mestruazioni previste oggi","today.in.one":"Mestruazioni tra {n} giorno","today.in.other":"Mestruazioni tra {n} giorni","today.expected":"Mestruazioni attese",
+"today.next":"Prossime mestruazioni ({p}%)","today.sigma":"Deviazione standard σ",
+"today.ov.c":"Ovulazione (confermata)","today.ov.e":"Ovulazione (stimata)",
+"today.fertile":"Finestra fertile","today.fertile.sub":"5 gg prima + 1 dopo l'ovulazione",
+"today.pms":"Fase premestruale","today.pms.sub":"Possibili sintomi PMS",
+"today.lut":"Fase luteale personale","today.lut.val":"{v} giorni",
+"bbt.title":"Temperatura basale","bbt.cur":"ciclo corrente","bbt.need":"Registra la temperatura basale per almeno 2 giorni per vedere il grafico.",
+"bbt.cover":"linea di copertura {v}°","bbt.shift":"Rialzo termico rilevato dal {d} (regola 3 su 6, ≥0,2 °C).","bbt.noshift":"Nessun rialzo termico confermato finora.","bbt.ov":"ov",
+"advice.title":"Consigli di oggi","advice.log":"Registra oggi",
+"advice.none":"Non hai ancora registrato nulla oggi: temperatura e muco migliorano le previsioni.",
+"advice.stressHigh":"Stress alto: lo stress può ritardare l'ovulazione, valuta respirazione o pausa.",
+"advice.stressLow":"Ottimo! Il tuo livello di stress è basso, il che è benefico per il tuo ciclo mestruale.",
+"advice.sleepLow":"Sonno scarso: la temperatura di oggi potrebbe essere alterata.",
+"advice.eggwhite":"Muco chiara d'uovo: giorni di massima fertilità.",
+"advice.mestruale":["Idratati e scegli pasti ricchi di ferro (legumi, verdure a foglia).","Calore locale e movimento dolce possono ridurre i crampi."],
+"advice.follicolare":["Energia in crescita: è un buon momento per allenamenti più intensi.","Mantieni un sonno regolare per stabilizzare la temperatura basale."],
+"advice.fertile":["Il muco acquoso o chiara d'uovo segnala il picco di fertilità.","Bevi acqua e registra muco e test LH ogni giorno."],
+"advice.ovulazione":["Misura la temperatura al risveglio: il rialzo conferma l'ovulazione.","Possibile lieve dolore pelvico unilaterale."],
+"advice.luteale":["Il progesterone alza la temperatura: è normale sentirsi più stanche.","Preferisci carboidrati complessi e magnesio per umore e sonno."],
+"advice.pms":["Riduci caffeina e sale per gonfiore e tensione al seno.","Pratica yoga o camminate; pianifica meno impegni stressanti."],
+"cal.prev":"Mese precedente","cal.next":"Mese successivo","cal.legend.ci":"▭ tratteggio: intervallo di confidenza mestruazioni","cal.note":"Il calendario si ricalcola quando registri LH, muco o temperatura.",
+"d.date":"Data","d.flow":"Flusso","d.temp":"Temperatura basale (°C)","d.lh":"Test LH","d.mucus":"Muco cervicale","d.stress":"Stress (1-5)","d.sleep":"Qualità del sonno (1-5)",
+"d.sex":"Rapporto sessuale","d.activity":"Attività fisica","d.meds":"Farmaci / contraccettivi","d.meds.ph":"es. pillola, antibiotico","d.symptoms":"Sintomi","d.mood":"Umore","d.notes":"Note","d.save":"Salva giorno","d.delete":"Elimina",
+"flow.assente":"Assente","flow.spotting":"Spotting","flow.leggero":"Leggero","flow.medio":"Medio","flow.abbondante":"Abbondante",
+"lh.":"Non eseguito","lh.negativo":"Negativo","lh.positivo":"Positivo",
+"mucus.asciutto":"Asciutto","mucus.appiccicoso":"Appiccicoso","mucus.cremoso":"Cremoso","mucus.acquoso":"Acquoso","mucus.chiara_uovo":"Chiara d'uovo",
+"sex.no":"No","sex.si":"Sì",
+"act.nessuna":"Nessuna","act.leggera":"Leggera","act.moderata":"Moderata","act.intensa":"Intensa",
+"sym.cramps":"Crampi","sym.headache":"Mal di testa","sym.bloating":"Gonfiore","sym.breast":"Seno teso","sym.acne":"Acne","sym.fatigue":"Stanchezza","sym.cravings":"Voglie","sym.backpain":"Dolori lombari","sym.nausea":"Nausea",
+"toast.future":"Non puoi registrare giorni futuri","toast.saved":"Giorno salvato","toast.deleted":"Giorno eliminato","toast.badtemp":"Temperatura non valida (35–39 °C)","confirm.delday":"Eliminare i dati registrati per questo giorno?",
+"s.empty":"Servono almeno due inizi di mestruazione registrati per analizzare la variabilità.","s.title":"Variabilità della durata del ciclo",
+"s.legend":"Barre ambra = cicli anomali, esclusi dalle statistiche. Banda viola = ± 1σ attorno alla media mobile esponenziale.",
+"s.exp":"Durata attesa","s.sd":"σ ciclo","s.valid":"Cicli validi","s.list":"Cicli registrati","s.luteal":"luteale {n}",
+"s.anom":"Anomalo","s.anomAuto":"(fuori 21-45 gg)","s.anomMan":"(manuale)","s.ok":"Valido","s.ovvia":"ovulazione via {m}","s.include":"Includi","s.mark":"Segna anomalo",
+"toast.excl":"Ciclo escluso dai calcoli","toast.incl":"Ciclo incluso nei calcoli",
+"set.last":"Ultima mestruazione (usata senza storico nel diario, o se più recente dell'ultima registrata)",
+"set.cycle":"Durata media ciclo (giorni)","set.period":"Durata mestruazioni (giorni)",
+"set.lut":"Fase luteale","set.lut.auto":"Automatica (dallo storico, default 14 gg)","set.lut.manual":"Manuale","set.lut.days":"Giorni di fase luteale",
+"set.alpha":"Peso dei cicli recenti (guardare solo agli ultimi mesi o a tutto lo storico)","set.alpha.hint":"(Più alto = considera soprattutto gli ultimi cicli. Più basso = considera tutto lo storico.)",
+"set.conf":"Livello di confidenza",
+"set.age":"Età (anni)","set.age.ph":"es. 28","set.age.cur":"Età impostata",
+"set.weight":"Peso (kg)","set.weight.ph":"es. 60","set.weight.cur":"Peso impostato",
+"set.height":"Altezza (cm)","set.height.ph":"es. 165","set.height.cur":"Altezza impostata",
+"set.bmi":"BMI (Indice di Massa Corporea)","bmi.under":"Sottopeso - Maggiore variabilità ciclica prevista","bmi.normal":"Normale - Variabilità basale","bmi.over":"Sovrappeso - Maggiore variabilità ciclica prevista","bmi.obese":"Obesità - Maggiore variabilità ciclica prevista",
+"set.lang":"Lingua","set.lang.auto":"Automatica (browser)",
+"set.info":"Informazioni app","set.info.text":"LunaCycle v1.3 · GNU GPL v3<br>App per il tracciamento avanzato del ciclo mestruale con previsioni precise",
+"set.save":"Salva e ricalcola","set.export":"Esporta backup","set.import":"Importa backup","set.clear":"Cancella tutto",
+"confirm.clear":"Cancellare tutti i dati? Questa azione non può essere annullata.","toast.savefail":"Impossibile salvare: spazio del browser pieno o archiviazione bloccata. Esporta un backup.","toast.cleared":"Dati cancellati","toast.recalc":"Algoritmo ricalcolato",
+"confirm.import":"Importare il backup? I dati attuali verranno sostituiti.","toast.imported":"Backup importato","toast.badfile":"File di backup non valido",
+"legal.title":"Info & Note Legali",
+"legal.gpl":"<b>LunaCycle v1.3</b> — Software libero, GNU GPL v3 o successiva. Puoi usarlo, studiarlo, modificarlo e ridistribuirlo; le versioni modificate devono restare libere con lo stesso codice sorgente. Nessuna garanzia (vedi file LICENSE).",
+"legal.med":"<b>Disclaimer Medico:</b> Questa applicazione è destinata esclusivamente a scopo informativo e statistico. Non costituisce un dispositivo medico, non fornisce diagnosi né sostituisce il parere di un medico qualificato. Non deve essere utilizzata come metodo anticoncezionale.",
+"legal.priv":"<b>Privacy & Dati:</b> I tuoi dati sono salvati esclusivamente in locale sul tuo dispositivo tramite <code>localStorage</code> e non vengono mai trasmessi a server esterni."
+},
+en:{
+"app.sub":"Statistical & symptothermal predictions · data stays on your device",
+"nav.oggi":"Today","nav.calendario":"Calendar","nav.diario":"Diary","nav.stats":"Statistics","nav.impost":"Settings",
+"u.days":"d","u.years":"years","u.daysLong":"days",
+"rep.btn":"Export medical report","rep.hint":"The print dialog opens: choose “Save as PDF” to get the file to bring to your doctor.",
+"rep.file":"clinical-report","rep.title":"Menstrual cycle clinical report","rep.gen":"Generated on {d} · Period analyzed: {a} – {b}",
+"rep.profile":"Profile data","rep.age":"Age","rep.weight":"Weight","rep.height":"Height","rep.bmi":"BMI","rep.na":"not provided",
+"rep.sum":"Cycle summary (last {n})","rep.cycles":"Cycles analyzed","rep.valid":"Cycles used for averages (anomalous excluded)","rep.mean":"Mean cycle length","rep.range":"Minimum – maximum","rep.sd":"Standard deviation","rep.reg":"Regularity",
+"rep.reg.ok":"Regular","rep.reg.mild":"Slightly variable","rep.reg.irr":"Irregular","rep.reg.none":"Not enough data (at least 3 cycles needed)",
+"rep.out":"Cycles outside the 24–38 day range","rep.bleed":"Mean bleeding duration","rep.lut":"Mean luteal phase (from detected ovulation)","rep.nodata":"not available","rep.last":"Last recorded period","rep.next":"Next period (estimated)",
+"rep.reg.note":"Criterion: difference between the shortest and longest cycle ≤ 7 days = regular, 8–9 = slightly variable, ≥ 10 = irregular.",
+"rep.detail":"Cycle details","rep.c.start":"Start","rep.c.len":"Cycle length","rep.c.bleed":"Bleeding days","rep.c.ov":"Ovulation (method)","rep.c.lut":"Luteal phase","rep.c.note":"Notes","rep.anom":"Excluded from averages","rep.nocycles":"No complete cycle recorded in the period.",
+"rep.bbt":"Basal body temperature (last 6 months)","rep.bbt.stats":"{n} readings · mean {m} °C · min {a} °C – max {b} °C","rep.bbt.none":"No basal temperature recorded (at least 2 readings needed).","rep.bbt.leg":"Red dashed lines: period start · green lines: detected ovulation.",
+"rep.sym":"Recurring symptoms (last 6 months)","rep.sym.col":"Symptom","rep.sym.days":"Days","rep.sym.of":"Days logged in the period: {n}","rep.sym.none":"No symptoms recorded in the period.",
+"rep.meds":"Medications / contraceptives noted","rep.meds.times":"{n} days · last {d}","rep.meds.none":"No entries in the period.",
+"rep.disc":"Report generated automatically by LunaCycle from user-entered data. It is purely informational and statistical: it is not a diagnosis and does not replace a doctor's assessment.",
+"ph.mestruale":"Period","ph.follicolare":"Follicular phase","ph.fertile":"Fertile window","ph.ovulazione":"Ovulation","ph.luteale":"Luteal phase","ph.pms":"Premenstrual phase",
+"method.lh":"LH test","method.bbt":"BBT rise","method.mucus":"Fertile mucus","method.cal":"Calendar + luteal phase",
+"lut.std":"standard (14 d)","lut.manual":"manual","lut.measured.one":"measured over {n} cycle","lut.measured.other":"measured over {n} cycles",
+"today.start.title":"Start here","today.start.text":"Set the date of your last period or log your flow in the diary.","today.start.btn":"Set date",
+"today.day":"Day {d} of ~{l}","today.day.over":"Cycle day {d}",
+"today.late.one":"{n} day late","today.late.other":"{n} days late",
+"today.due":"Period expected today","today.in.one":"Period in {n} day","today.in.other":"Period in {n} days","today.expected":"Period expected",
+"today.next":"Next period ({p}%)","today.sigma":"Standard deviation σ",
+"today.ov.c":"Ovulation (confirmed)","today.ov.e":"Ovulation (estimated)",
+"today.fertile":"Fertile window","today.fertile.sub":"5 days before + 1 day after ovulation",
+"today.pms":"Premenstrual phase","today.pms.sub":"Possible PMS symptoms",
+"today.lut":"Personal luteal phase","today.lut.val":"{v} days",
+"bbt.title":"Basal body temperature","bbt.cur":"current cycle","bbt.need":"Log your basal temperature for at least 2 days to see the chart.",
+"bbt.cover":"coverage line {v}°","bbt.shift":"Temperature rise detected from {d} (3-over-6 rule, ≥0.2 °C).","bbt.noshift":"No temperature rise confirmed so far.","bbt.ov":"ov",
+"advice.title":"Today's tips","advice.log":"Log today",
+"advice.none":"You haven't logged anything today yet: temperature and mucus improve the predictions.",
+"advice.stressHigh":"High stress: stress can delay ovulation, consider breathing exercises or a break.",
+"advice.stressLow":"Great! Your stress level is low, which is good for your cycle.",
+"advice.sleepLow":"Poor sleep: today's temperature may be skewed.",
+"advice.eggwhite":"Egg-white mucus: peak fertility days.",
+"advice.mestruale":["Stay hydrated and choose iron-rich meals (legumes, leafy greens).","Local heat and gentle movement can ease cramps."],
+"advice.follicolare":["Energy is rising: a good time for more intense workouts.","Keep a regular sleep schedule to stabilize your basal temperature."],
+"advice.fertile":["Watery or egg-white mucus signals peak fertility.","Drink water and log mucus and LH tests every day."],
+"advice.ovulazione":["Take your temperature on waking: a rise confirms ovulation.","Mild one-sided pelvic pain is possible."],
+"advice.luteale":["Progesterone raises your temperature: feeling more tired is normal.","Favor complex carbohydrates and magnesium for mood and sleep."],
+"advice.pms":["Cut back on caffeine and salt to reduce bloating and breast tenderness.","Try yoga or walks; plan fewer stressful commitments."],
+"cal.prev":"Previous month","cal.next":"Next month","cal.legend.ci":"▭ dashed: period confidence interval","cal.note":"The calendar is recalculated when you log LH, mucus or temperature.",
+"d.date":"Date","d.flow":"Flow","d.temp":"Basal body temperature (°C)","d.lh":"LH test","d.mucus":"Cervical mucus","d.stress":"Stress (1-5)","d.sleep":"Sleep quality (1-5)",
+"d.sex":"Intercourse","d.activity":"Physical activity","d.meds":"Medication / contraceptives","d.meds.ph":"e.g. pill, antibiotic","d.symptoms":"Symptoms","d.mood":"Mood","d.notes":"Notes","d.save":"Save day","d.delete":"Delete",
+"flow.assente":"None","flow.spotting":"Spotting","flow.leggero":"Light","flow.medio":"Medium","flow.abbondante":"Heavy",
+"lh.":"Not done","lh.negativo":"Negative","lh.positivo":"Positive",
+"mucus.asciutto":"Dry","mucus.appiccicoso":"Sticky","mucus.cremoso":"Creamy","mucus.acquoso":"Watery","mucus.chiara_uovo":"Egg white",
+"sex.no":"No","sex.si":"Yes",
+"act.nessuna":"None","act.leggera":"Light","act.moderata":"Moderate","act.intensa":"Intense",
+"sym.cramps":"Cramps","sym.headache":"Headache","sym.bloating":"Bloating","sym.breast":"Breast tenderness","sym.acne":"Acne","sym.fatigue":"Fatigue","sym.cravings":"Cravings","sym.backpain":"Lower back pain","sym.nausea":"Nausea",
+"toast.future":"You can't log future days","toast.saved":"Day saved","toast.deleted":"Day deleted","toast.badtemp":"Invalid temperature (35–39 °C)","confirm.delday":"Delete the data logged for this day?",
+"s.empty":"At least two logged period starts are needed to analyze variability.","s.title":"Cycle length variability",
+"s.legend":"Amber bars = anomalous cycles, excluded from statistics. Purple band = ± 1σ around the exponential moving average.",
+"s.exp":"Expected length","s.sd":"Cycle σ","s.valid":"Valid cycles","s.list":"Logged cycles","s.luteal":"luteal {n}",
+"s.anom":"Anomalous","s.anomAuto":"(outside 21-45 d)","s.anomMan":"(manual)","s.ok":"Valid","s.ovvia":"ovulation via {m}","s.include":"Include","s.mark":"Mark anomalous",
+"toast.excl":"Cycle excluded from calculations","toast.incl":"Cycle included in calculations",
+"set.last":"Last period (used when the diary has no history, or if more recent than the last logged one)",
+"set.cycle":"Average cycle length (days)","set.period":"Period length (days)",
+"set.lut":"Luteal phase","set.lut.auto":"Automatic (from history, default 14 d)","set.lut.manual":"Manual","set.lut.days":"Luteal phase days",
+"set.alpha":"Weight of recent cycles (look only at the latest months or at your whole history)","set.alpha.hint":"(Higher = mostly the latest cycles. Lower = the whole history.)",
+"set.conf":"Confidence level",
+"set.age":"Age (years)","set.age.ph":"e.g. 28","set.age.cur":"Age set",
+"set.weight":"Weight (kg)","set.weight.ph":"e.g. 60","set.weight.cur":"Weight set",
+"set.height":"Height (cm)","set.height.ph":"e.g. 165","set.height.cur":"Height set",
+"set.bmi":"BMI (Body Mass Index)","bmi.under":"Underweight - higher cycle variability expected","bmi.normal":"Normal - baseline variability","bmi.over":"Overweight - higher cycle variability expected","bmi.obese":"Obesity - higher cycle variability expected",
+"set.lang":"Language","set.lang.auto":"Automatic (browser)",
+"set.info":"App information","set.info.text":"LunaCycle v1.3 · GNU GPL v3<br>Advanced menstrual cycle tracking with accurate predictions",
+"set.save":"Save and recalculate","set.export":"Export backup","set.import":"Import backup","set.clear":"Delete everything",
+"confirm.clear":"Delete all data? This action cannot be undone.","toast.savefail":"Could not save: browser storage is full or blocked. Export a backup.","toast.cleared":"Data deleted","toast.recalc":"Algorithm recalculated",
+"confirm.import":"Import the backup? Current data will be replaced.","toast.imported":"Backup imported","toast.badfile":"Invalid backup file",
+"legal.title":"Info & Legal Notes",
+"legal.gpl":"<b>LunaCycle v1.3</b> — Free software, GNU GPL v3 or later. You may use, study, modify and redistribute it; modified versions must remain free under the same source code terms. No warranty (see the LICENSE file).",
+"legal.med":"<b>Medical disclaimer:</b> This application is intended for informational and statistical purposes only. It is not a medical device, does not provide diagnoses and does not replace the advice of a qualified doctor. It must not be used as a contraceptive method.",
+"legal.priv":"<b>Privacy & Data:</b> Your data is saved only locally on your device via <code>localStorage</code> and is never sent to external servers."
+}};
+</script>
+
+<!-- ============ UI ============ -->
+<script>
+const E=CycleEngine,$=id=>document.getElementById(id);
+const BLEED=['leggero','medio','abbondante'];
+const FLOW=['assente','spotting','leggero','medio','abbondante'],MUC=['asciutto','appiccicoso','cremoso','acquoso','chiara_uovo'];
+const SYM=['cramps','headache','bloating','breast','acne','fatigue','cravings','backpain','nausea'];
+const SYMLEG={'Crampi':'cramps','Mal di testa':'headache','Gonfiore':'bloating','Seno teso':'breast','Acne':'acne','Stanchezza':'fatigue','Voglie':'cravings','Dolori lombari':'backpain','Nausea':'nausea'};
+const ACT=['nessuna','leggera','moderata','intensa'],MOOD=['😊','😐','😢','😠','😰'],CONFS=[.8,.9,.92,.95];
+const DEF={cycleLength:28,periodLength:5,lutealMode:'auto',lutealManual:14,alpha:.35,confidence:.92,lastPeriodDate:'',anomalous:{},age:'',weight:'',height:'',lang:'auto'};
+
+// ---------- i18n ----------
+let L='it';
+const resolveLang=()=>S.lang==='it'||S.lang==='en'?S.lang:(String(navigator.language||'').toLowerCase().startsWith('it')?'it':'en');
+const loc=()=>L==='it'?'it-IT':'en-GB';
+const t=(k,p)=>{let s=I18N[L][k];if(s===undefined)s=I18N.en[k];if(s===undefined)return k;if(typeof s!=='string')return s;return p?s.replace(/\{(\w+)\}/g,(m,x)=>p[x]!==undefined?p[x]:m):s};
+const pl=(k,n)=>t(k+(n===1?'.one':'.other'),{n});
+function applyLang(){L=resolveLang();document.documentElement.lang=L;document.querySelectorAll('[data-i18n]').forEach(e=>e.textContent=t(e.dataset.i18n))}
+
+// ---------- dati ----------
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const validDate=d=>typeof d==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d)&&E.f(E.p(d))===d;
+const pf=v=>parseFloat(String(v==null?'':v).replace(',','.'));   // accetta anche la virgola decimale (tastiere italiane)
+const num=(v,a,b)=>{const x=pf(v);return isFinite(x)&&x>=a&&x<=b?x:null};
+function cleanLogs(o){const r={};if(!o||typeof o!=='object'||Array.isArray(o))return r;
+  Object.keys(o).forEach(d=>{const l=o[d];if(!validDate(d)||!l||typeof l!=='object')return;const tp=num(l.temp,30,45);
+    r[d]={flow:FLOW.includes(l.flow)?l.flow:'',temp:tp===null?'':tp,lh:l.lh==='negativo'||l.lh==='positivo'?l.lh:'',mucus:MUC.includes(l.mucus)?l.mucus:'',
+      stress:num(l.stress,1,5)||3,sleep:num(l.sleep,1,5)||3,activity:ACT.includes(l.activity)?l.activity:'nessuna',meds:String(l.meds==null?'':l.meds).slice(0,200),
+      symptoms:(Array.isArray(l.symptoms)?l.symptoms:[]).map(x=>SYMLEG[x]||x).filter(x=>SYM.includes(x)),mood:MOOD.includes(l.mood)?l.mood:'',
+      notes:String(l.notes==null?'':l.notes).slice(0,2000),intercourse:l.intercourse==='no'||l.intercourse==='si'?l.intercourse:''}});
+  return r}
+function cleanSet(o){o=o&&typeof o==='object'?o:{};const s={...DEF};
+  s.cycleLength=Math.round(num(o.cycleLength,21,45)||DEF.cycleLength);s.periodLength=Math.round(num(o.periodLength,2,9)||DEF.periodLength);
+  s.lutealMode=o.lutealMode==='manual'?'manual':'auto';s.lutealManual=Math.round(num(o.lutealManual,10,16)||DEF.lutealManual);
+  s.alpha=num(o.alpha,.1,.7)||DEF.alpha;s.confidence=CONFS.includes(+o.confidence)?+o.confidence:DEF.confidence;
+  s.lastPeriodDate=validDate(o.lastPeriodDate)?o.lastPeriodDate:'';
+  s.anomalous={};if(o.anomalous&&typeof o.anomalous==='object')Object.keys(o.anomalous).forEach(k=>{if(validDate(k))s.anomalous[k]=!!o.anomalous[k]});
+  const a=num(o.age,13,55),w=num(o.weight,30,200),h=num(o.height,100,220);s.age=a===null?'':a;s.weight=w===null?'':w;s.height=h===null?'':h;
+  s.lang=o.lang==='it'||o.lang==='en'?o.lang:'auto';return s}
+const ld=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}};
+let logs=cleanLogs(ld('lc4_logs',{})),S=cleanSet(ld('lc4_set',{}));
+const saveState=()=>{try{localStorage.setItem('lc4_logs',JSON.stringify(logs));localStorage.setItem('lc4_set',JSON.stringify(S));return true}catch(e){toast(t('toast.savefail'));return false}};
+let today=E.f(new Date());let tab='oggi',calD=new Date(),dDate=today,A;
+function exportData(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({app:'LunaCycle',v:1,logs,settings:S},null,1)],{type:'application/json'}));a.download='lunacycle-backup-'+today+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1e4)}
+function importData(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{const d=JSON.parse(r.result);if(!d||d.app!=='LunaCycle'||!d.logs||typeof d.logs!=='object'||!d.settings||typeof d.settings!=='object')throw 0;
+    if(!confirm(t('confirm.import'))){inp.value='';return}
+    logs=cleanLogs(d.logs);S=cleanSet(d.settings);const ok=saveState();applyLang();render();if(ok)toast(t('toast.imported'))}catch(e){toast(t('toast.badfile'))}inp.value=''};
+  r.onerror=()=>{toast(t('toast.badfile'));inp.value=''};r.readAsText(f)}
+
+// ---------- utilità UI ----------
+const PHC={mestruale:'#ff4081',follicolare:'#b388ff',fertile:'#4dd0e1',ovulazione:'#26e0c4',luteale:'#7e57c2',pms:'#ffb300'};
+const nf=(v,d=1)=>Number(v).toLocaleString(loc(),{minimumFractionDigits:d,maximumFractionDigits:d});
+const fd=(s,o)=>E.p(s).toLocaleDateString(loc(),o||{day:'numeric',month:'short'});
+const rng=r=>r[0]===r[1]?fd(r[0]):fd(r[0])+' – '+fd(r[1]);
+let toastT;const toast=m=>{const el=$('toast');el.textContent=m;el.style.opacity=1;clearTimeout(toastT);toastT=setTimeout(()=>el.style.opacity=0,2200)};
+function go(x){tab=x;window.scrollTo(0,0);['oggi','calendario','diario','stats','impost'].forEach(k=>$('v-'+k).classList.toggle('hidden',k!==x));document.querySelectorAll('nav button').forEach(b=>{const on=b.dataset.t===x;b.classList.toggle('act',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});render()}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.t));
+const srcText=s=>s.k==='manual'?t('lut.manual'):s.k==='measured'?pl('lut.measured',s.n):t('lut.std');
+
+function advice(ph,l){
+  const x=[...(t('advice.'+ph)||[])];
+  if(l){if(+l.stress>=4)x.push(t('advice.stressHigh'));if(+l.stress<=2)x.push(t('advice.stressLow'));if(+l.sleep&&+l.sleep<=2)x.push(t('advice.sleepLow'));if(l.mucus==='chiara_uovo')x.push(t('advice.eggwhite'))}
+  else x.push(t('advice.none'));return x;
+}
+
+function bbtChart(a){
+  const cur=a.pred.cur,pts=Object.keys(logs).filter(d=>d>=cur&&+logs[d].temp>0).sort().slice(-28).map(d=>[d,+logs[d].temp]);
+  if(pts.length<2)return `<p class="sub py-6 text-center">${t('bbt.need')}</p>`;
+  const W=340,H=130,mn=Math.min(...pts.map(q=>q[1]))-.1,mx=Math.max(...pts.map(q=>q[1]))+.1,X=i=>12+i*(W-24)/Math.max(1,pts.length-1),Y=v=>H-14-(v-mn)/(mx-mn)*(H-30);
+  const sh=a.pred.shift;let g='';
+  if(sh&&sh.cover>=mn&&sh.cover<=mx)g+=`<line x1="0" x2="${W}" y1="${Y(sh.cover)}" y2="${Y(sh.cover)}" stroke="#ffb300" stroke-dasharray="4 3"/><text x="${W-4}" y="${Y(sh.cover)-3}" fill="#ffb300" font-size="9" text-anchor="end">${t('bbt.cover',{v:nf(sh.cover,2)})}</text>`;
+  g+=`<polyline fill="none" stroke="#b388ff" stroke-width="2" points="${pts.map((q,i)=>X(i)+','+Y(q[1])).join(' ')}"/>`;
+  pts.forEach((q,i)=>{const hi=sh&&q[0]>=sh.first;g+=`<circle cx="${X(i)}" cy="${Y(q[1])}" r="3.5" fill="${hi?'#ff4081':'#b388ff'}"/>`;
+    if(i%4===0||i===pts.length-1)g+=`<text x="${X(i)}" y="${H-1}" font-size="9" fill="#9a9aa8" text-anchor="middle">${fd(q[0],{day:'numeric',month:'numeric'})}</text>`;
+    if(a.pred.ovConfirmed&&q[0]===a.pred.ov)g+=`<text x="${X(i)}" y="12" font-size="10" fill="#26e0c4" text-anchor="middle">${t('bbt.ov')}</text>`});
+  return `<svg viewBox="0 0 ${W} ${H}" class="w-full">${g}</svg><p class="sub">${sh?t('bbt.shift',{d:fd(sh.first)}):t('bbt.noshift')}</p>`;
+}
+
+function renderOggi(){
+  const el=$('v-oggi');
+  if(!A.pred){el.innerHTML=`<div class="card text-center space-y-3"><p class="font-semibold">${t('today.start.title')}</p><p class="sub">${t('today.start.text')}</p><div class="flex gap-2 justify-center"><button class="btn" onclick="go('impost')">${t('today.start.btn')}</button></div></div>`;return}
+  const P=A.pred,ph=E.phase(A,S,today),tl=logs[today];
+  // Se oggi è registrato un flusso reale, la fase è "mestruale" anche oltre la durata impostata
+  const bleedNow=!!tl&&BLEED.includes(tl.flow),key=bleedNow?'mestruale':ph?ph.ph:'follicolare',nm=t('ph.'+key),col=PHC[key],cd=ph?ph.day:1,len=ph?ph.len:28,dl=E.diff(P.next,today);
+  const sub=P.late>P.w?pl('today.late',P.late):dl===0?t('today.due'):dl>0?pl('today.in',dl):t('today.expected');
+  const pct=Math.round(S.confidence*100),u=t('u.days');
+  el.innerHTML=`
+  <div class="card text-center space-y-4">
+    <div class="relative w-64 h-64 mx-auto"><svg viewBox="0 0 100 100" class="w-full h-full" style="transform:rotate(-90deg)"><circle cx="50" cy="50" r="42" stroke="#27272f" stroke-width="6" fill="none"/><circle cx="50" cy="50" r="42" stroke="${col}" stroke-width="6" stroke-linecap="round" fill="none" stroke-dasharray="264" stroke-dashoffset="${264*(1-Math.min(1,cd/len))}" style="transition:stroke-dashoffset .8s"/></svg>
+    <div class="absolute inset-0 flex flex-col items-center justify-center px-6"><p class="sub">${cd>len?t('today.day.over',{d:cd}):t('today.day',{d:cd,l:len})}</p><h2 class="text-2xl font-bold" style="color:${col}">${nm}</h2><p class="text-sm mt-1">${sub}</p></div></div>
+    <div class="grid grid-cols-2 gap-2 text-left text-xs" style="background:var(--bg);border-radius:1rem;padding:.75rem">
+      <div><span class="sub">${t('today.next',{p:pct})}</span><p class="font-bold text-sm">${rng(P.ci)}</p></div>
+      <div class="text-right"><span class="sub">${t('today.sigma')}</span><p class="font-bold text-sm" style="color:var(--pink)">± ${nf(P.sigma,1)} ${u}</p></div>
+    </div>
+  </div>
+  <div class="grid grid-cols-2 gap-3">
+    <div class="card"><p class="sub">${P.ovConfirmed?t('today.ov.c'):t('today.ov.e')}</p><p class="font-bold">${P.ovConfirmed?fd(P.ov):rng(P.ovCi)}</p><p class="sub">${P.method?t('method.'+P.method):t('method.cal')}</p></div>
+    <div class="card"><p class="sub">${t('today.fertile')}</p><p class="font-bold">${rng(P.fertile)}</p><p class="sub">${t('today.fertile.sub')}</p></div>
+    <div class="card"><p class="sub">${t('today.pms')}</p><p class="font-bold">${rng(P.pms)}</p><p class="sub">${t('today.pms.sub')}</p></div>
+    <div class="card"><p class="sub">${t('today.lut')}</p><p class="font-bold">${t('today.lut.val',{v:nf(A.lut,1)})}</p><p class="sub">${srcText(A.src)}</p></div>
+  </div>
+  <div class="card space-y-2"><div class="flex justify-between"><h3 class="font-semibold text-sm">${t('bbt.title')}</h3><span class="sub">${t('bbt.cur')}</span></div>${bbtChart(A)}</div>
+  <div class="card space-y-2"><h3 class="font-semibold text-sm">${t('advice.title')}</h3><ul class="space-y-1 text-sm">${advice(key,tl).map(x=>'<li>• '+esc(x)+'</li>').join('')}</ul><button class="btn w-full mt-2" onclick="openDiary('${today}')">${t('advice.log')}</button></div>`;
+}
+
+function renderCal(){
+  const y=calD.getFullYear(),m=calD.getMonth(),first=new Date(y,m,1),off=(first.getDay()+6)%7,n=new Date(y,m+1,0).getDate();
+  let h=`<div class="card"><div class="flex justify-between items-center mb-3"><button class="btn2" aria-label="${esc(t('cal.prev'))}" onclick="calD=new Date(${y},${m-1},1);render()">‹</button><b class="capitalize">${first.toLocaleDateString(loc(),{month:'long',year:'numeric'})}</b><button class="btn2" aria-label="${esc(t('cal.next'))}" onclick="calD=new Date(${y},${m+1},1);render()">›</button></div><div class="grid grid-cols-7 gap-1 text-center text-xs">`;
+  for(let i=0;i<7;i++)h+=`<span class="sub">${new Date(2024,0,1+i).toLocaleDateString(loc(),{weekday:'narrow'})}</span>`;   // 1 gen 2024 = lunedì
+  for(let i=0;i<off;i++)h+='<span></span>';
+  for(let d=1;d<=n;d++){
+    const ds=E.f(new Date(y,m,d)),ph=A.pred?E.phase(A,S,ds):null,lg=logs[ds],bleed=lg&&BLEED.includes(lg.flow);
+    const col=ph?PHC[ph.ph]:'#444444',inCI=A.pred&&ds>=A.pred.ci[0]&&ds<=A.pred.ci[1]&&ds>=today;
+    h+=`<button onclick="openDiary('${ds}')" aria-label="${esc(fd(ds,{day:'numeric',month:'long',year:'numeric'}))}"${ds===today?' aria-current="date"':''} class="aspect-square rounded-full relative" style="background:${bleed?'#ff4081':col+'66'};border:${ds===today?'2px solid #fff':inCI?'1px dashed #ff4081':'1px solid transparent'};color:${bleed?'#fff':'inherit'}">${d}${lg&&Object.keys(lg).length?'<i style="position:absolute;bottom:3px;left:50%;width:4px;height:4px;margin-left:-2px;border-radius:9px;background:#fff"></i>':''}</button>`;
+  }
+  h+=`</div></div><div class="card flex flex-wrap gap-x-4 gap-y-1 text-xs">${Object.keys(PHC).map(k=>`<span><i style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${PHC[k]}"></i> ${t('ph.'+k)}</span>`).join('')}<span>${t('cal.legend.ci')}</span></div>
+  <p class="sub">${t('cal.note')}</p>`;
+  $('v-calendario').innerHTML=h;
+}
+
+function openDiary(d){if(d>today){toast(t('toast.future'));return}dDate=d;go('diario')}
+function renderDiary(){
+  const l=logs[dDate]||{};
+  const pill=(v,label,on,extra)=>`<span class="pill ${extra||''} ${on?'on':''}" data-v="${v}" aria-pressed="${!!on}">${label}</span>`;
+  $('v-diario').innerHTML=`<div class="card space-y-4">
+  <div><label class="sub" for="dd">${t('d.date')}</label><input type="date" id="dd" value="${dDate}" max="${today}" onchange="if(this.value){dDate=this.value;render()}"></div>
+  <div><p class="sub mb-1">${t('d.flow')}</p><div class="flex flex-wrap gap-2" id="fl">${FLOW.map(x=>pill(x,t('flow.'+x),l.flow===x)).join('')}</div></div>
+  <div class="grid grid-cols-2 gap-3"><div><label class="sub" for="tp">${t('d.temp')}</label><input id="tp" type="text" inputmode="decimal" autocomplete="off" placeholder="36.45" value="${l.temp||''}"></div>
+  <div><label class="sub" for="lh">${t('d.lh')}</label><select id="lh">${['','negativo','positivo'].map(o=>`<option value="${o}" ${l.lh===o?'selected':''}>${t('lh.'+o)}</option>`).join('')}</select></div></div>
+  <div><label class="sub" for="mu">${t('d.mucus')}</label><select id="mu"><option value="">—</option>${MUC.map(o=>`<option value="${o}" ${l.mucus===o?'selected':''}>${t('mucus.'+o)}</option>`).join('')}</select></div>
+  <div class="grid grid-cols-2 gap-3"><div><label class="sub" for="st">${t('d.stress')}: <b id="sv">${l.stress||3}</b></label><input type="range" id="st" min="1" max="5" value="${l.stress||3}" oninput="$('sv').textContent=this.value"></div>
+  <div><label class="sub" for="sl">${t('d.sleep')}: <b id="qv">${l.sleep||3}</b></label><input type="range" id="sl" min="1" max="5" value="${l.sleep||3}" oninput="$('qv').textContent=this.value"></div></div>
+  <div><p class="sub mb-1">${t('d.sex')}</p><div class="flex flex-wrap gap-2" id="si">${['no','si'].map(x=>pill(x,t('sex.'+x),l.intercourse===x)).join('')}</div></div>
+  <div class="grid grid-cols-2 gap-3"><div><label class="sub" for="ac">${t('d.activity')}</label><select id="ac">${ACT.map(o=>`<option value="${o}" ${l.activity===o?'selected':''}>${t('act.'+o)}</option>`).join('')}</select></div>
+  <div><label class="sub" for="me">${t('d.meds')}</label><input id="me" value="${esc(l.meds)}" placeholder="${esc(t('d.meds.ph'))}"></div></div>
+  <div><p class="sub mb-1">${t('d.symptoms')}</p><div class="flex flex-wrap gap-2" id="sy">${SYM.map(x=>pill(x,t('sym.'+x),(l.symptoms||[]).includes(x))).join('')}</div></div>
+  <div><p class="sub mb-1">${t('d.mood')}</p><div class="flex gap-2" id="mo">${MOOD.map(x=>pill(x,x,l.mood===x,'text-lg')).join('')}</div></div>
+  <div><label class="sub" for="nt">${t('d.notes')}</label><textarea id="nt" rows="2">${esc(l.notes)}</textarea></div>
+  <div class="flex gap-2"><button class="btn flex-1" onclick="saveDay()">${t('d.save')}</button><button class="btn2" onclick="delDay()">${t('d.delete')}</button></div></div>`;
+  const setOn=(el,on)=>{el.classList.toggle('on',on);el.setAttribute('aria-pressed',on)};
+  ['fl','mo','si'].forEach(id=>$(id).onclick=e=>{const p=e.target.closest('.pill');if(!p)return;const was=p.classList.contains('on');[...$(id).children].forEach(c=>setOn(c,false));if(!was)setOn(p,true)});
+  $('sy').onclick=e=>{const p=e.target.closest('.pill');if(p)setOn(p,!p.classList.contains('on'))};
+}
+function saveDay(){
+  if(dDate>today){toast(t('toast.future'));return}
+  const pick=id=>{const o=$(id).querySelector('.on');return o?o.dataset.v:''};
+  const raw=$('tp').value.trim().replace(',','.'),tv=parseFloat(raw);
+  if(raw!==''&&(isNaN(tv)||tv<35||tv>39)){toast(t('toast.badtemp'));return}
+  logs[dDate]={flow:pick('fl'),temp:raw===''?'':tv,lh:$('lh').value,mucus:$('mu').value,stress:+$('st').value,sleep:+$('sl').value,activity:$('ac').value,meds:$('me').value.slice(0,200),symptoms:[...$('sy').querySelectorAll('.on')].map(x=>x.dataset.v),mood:pick('mo'),notes:$('nt').value.slice(0,2000),intercourse:pick('si')};
+  const e=logs[dDate];   // giorno senza alcun dato reale (solo valori di default): non salvarlo
+  if(!e.flow&&e.temp===''&&!e.lh&&!e.mucus&&!e.mood&&!e.intercourse&&!e.meds&&!e.notes&&!e.symptoms.length&&e.activity==='nessuna'&&e.stress===3&&e.sleep===3)delete logs[dDate];
+  if(saveState())toast(t('toast.saved'));render();
+}
+function delDay(){if(!confirm(t('confirm.delday')))return;delete logs[dDate];if(saveState())toast(t('toast.deleted'));render()}
+
+// BMI
+function calculateBMI(){
+  const w=pf($('s9').value),h=pf($('s10').value);
+  if(w>0&&h>0){
+    const bmi=w/((h/100)*(h/100));$('bmi-value').textContent=(Math.round(bmi*10)/10).toFixed(1);
+    const k=bmi<18.5?'under':bmi<25?'normal':bmi<30?'over':'obese';
+    $('bmi-info').innerHTML=`<span style="color:${k==='normal'?'#10b981':'#ff4081'}">${t('bmi.'+k)}</span>`;$('bmi-container').style.display='block';
+  }else{$('bmi-value').textContent='--';$('bmi-info').innerHTML='';$('bmi-container').style.display='none'}
+}
+function updateWeight(){$('o9').textContent=$('s9').value||'--';calculateBMI()}
+function updateHeight(){$('o10').textContent=$('s10').value||'--';calculateBMI()}
+function toggleInfo(){const d=$('info-details'),g=$('info-toggle'),open=d.style.display==='none'||d.style.display==='';d.style.display=open?'block':'none';g.textContent=open?'▲':'▼';$('info-btn').setAttribute('aria-expanded',open)}
+
+function renderStats(){
+  const cs=A.cycles,el=$('v-stats');
+  if(!cs.length){el.innerHTML=`<div class="card sub">${t('s.empty')}</div>`;return}
+  const vs=cs.slice(-12),mx=Math.max(50,...vs.map(c=>c.len))+2,H=140,W=340,bw=Math.max(3,Math.min(34,(W-20)/vs.length-6)),Y=v=>H-18-v/mx*(H-30);
+  let g=`<rect x="0" y="${Y(A.ema+A.sd)}" width="${W}" height="${Y(A.ema-A.sd)-Y(A.ema+A.sd)}" fill="#b388ff22"/><line x1="0" x2="${W}" y1="${Y(A.ema)}" y2="${Y(A.ema)}" stroke="#b388ff" stroke-dasharray="4 3"/><text x="4" y="${Y(A.ema+A.sd)-3}" font-size="9" fill="#b388ff">EMA ${nf(A.ema,1)} ± σ ${nf(A.sd,1)}</text>`;
+  vs.forEach((c,i)=>{const x=10+i*((W-20)/vs.length);g+=`<rect x="${x}" y="${Y(c.len)}" width="${bw}" height="${H-18-Y(c.len)}" rx="4" fill="${c.anomalous?'#ffb300':'#ff4081'}"/><text x="${x+bw/2}" y="${Y(c.len)-3}" font-size="9" fill="#e6e6ea" text-anchor="middle">${c.len}</text><text x="${x+bw/2}" y="${H-5}" font-size="8" fill="#9a9aa8" text-anchor="middle">${fd(c.start,{day:'numeric',month:'numeric'})}</text>`});
+  const u=t('u.days');
+  el.innerHTML=`<div class="card space-y-2"><h3 class="font-semibold text-sm">${t('s.title')}</h3><svg viewBox="0 0 ${W} ${H}" class="w-full">${g}</svg><p class="sub">${t('s.legend')}</p></div>
+  <div class="grid grid-cols-3 gap-3 text-center"><div class="card"><p class="sub">${t('s.exp')}</p><b>${nf(A.ema,1)} ${u}</b></div><div class="card"><p class="sub">${t('s.sd')}</p><b>${nf(A.sd,2)}</b></div><div class="card"><p class="sub">${t('s.valid')}</p><b>${A.n}</b></div></div>
+  <div class="card space-y-2"><button class="btn w-full" onclick="printReport()">${t('rep.btn')}</button><p class="sub">${t('rep.hint')}</p></div>
+  <div class="card space-y-2"><h3 class="font-semibold text-sm">${t('s.list')}</h3>${cs.slice().reverse().map(c=>`<div class="flex items-center justify-between text-sm border-b py-1" style="border-color:var(--line)"><div><b>${fd(c.start,{day:'numeric',month:'short',year:'2-digit'})}</b> · ${c.len} ${u}${c.luteal?' · '+t('s.luteal',{n:c.luteal}):''}<p class="sub">${c.anomalous?t('s.anom')+' '+(c.auto?t('s.anomAuto'):t('s.anomMan')):t('s.ok')}${c.method?' · '+t('s.ovvia',{m:t('method.'+c.method)}):''}</p></div><button class="btn2 text-xs" onclick="toggleAn('${c.start}',${!c.anomalous})">${c.anomalous?t('s.include'):t('s.mark')}</button></div>`).join('')}</div>`;
+}
+function toggleAn(s,v){S.anomalous[s]=v;const ok=saveState();render();if(ok)toast(v?t('toast.excl'):t('toast.incl'))}
+
+function renderSet(){
+  const age=S.age===''?'--':S.age,wt=S.weight===''?'--':S.weight,ht=S.height===''?'--':S.height;
+  $('v-impost').innerHTML=`<div class="card space-y-4">
+  <div class="space-y-2">
+    <div><label class="sub" for="s1">${t('set.last')}</label><input type="date" id="s1" value="${S.lastPeriodDate}" max="${today}"></div>
+  </div>
+  <div class="space-y-2 sect">
+    <div><label class="sub" for="s2">${t('set.cycle')}: <b id="o2">${S.cycleLength}</b></label><input type="range" id="s2" min="21" max="45" value="${S.cycleLength}" oninput="$('o2').textContent=this.value"></div>
+    <div><label class="sub" for="s3">${t('set.period')}: <b id="o3">${S.periodLength}</b></label><input type="range" id="s3" min="2" max="9" value="${S.periodLength}" oninput="$('o3').textContent=this.value"></div>
+  </div>
+  <div class="space-y-2 sect">
+    <div><label class="sub" for="s4">${t('set.lut')}</label><select id="s4" onchange="$('s5w').style.display=this.value==='manual'?'block':'none'"><option value="auto" ${S.lutealMode==='auto'?'selected':''}>${t('set.lut.auto')}</option><option value="manual" ${S.lutealMode==='manual'?'selected':''}>${t('set.lut.manual')}</option></select></div>
+    <div id="s5w" style="display:${S.lutealMode==='manual'?'block':'none'}"><label class="sub" for="s5">${t('set.lut.days')}: <b id="o5">${S.lutealManual}</b></label><input type="range" id="s5" min="10" max="16" value="${S.lutealManual}" oninput="$('o5').textContent=this.value"></div>
+  </div>
+  <div class="space-y-2 sect">
+    <div><label class="sub" for="s6">${t('set.alpha')}: <b id="o6">${nf(S.alpha,2)}</b></label><div class="sub" style="font-size:0.7rem;margin-top:0.2rem">${t('set.alpha.hint')}</div><input type="range" id="s6" min="0.1" max="0.7" step="0.05" value="${S.alpha}" oninput="$('o6').textContent=nf(this.value,2)"></div>
+    <div><label class="sub" for="s7">${t('set.conf')}</label><select id="s7">${CONFS.map(c=>`<option value="${c}" ${S.confidence===c?'selected':''}>${Math.round(c*100)}%</option>`).join('')}</select></div>
+  </div>
+  <div class="space-y-2 sect">
+    <div><label class="sub" for="s8">${t('set.age')}</label><input type="number" id="s8" min="13" max="55" value="${S.age}" placeholder="${esc(t('set.age.ph'))}" oninput="$('o8').textContent=this.value||'--'"></div>
+    <div class="sub">${t('set.age.cur')}: <b id="o8">${age}</b> ${t('u.years')}</div>
+    <div><label class="sub" for="s9">${t('set.weight')}</label><input type="text" inputmode="decimal" autocomplete="off" id="s9" value="${S.weight}" placeholder="${esc(t('set.weight.ph'))}" oninput="updateWeight()"></div>
+    <div class="sub">${t('set.weight.cur')}: <b id="o9">${wt}</b> kg</div>
+    <div><label class="sub" for="s10">${t('set.height')}</label><input type="number" id="s10" min="100" max="220" value="${S.height}" placeholder="${esc(t('set.height.ph'))}" oninput="updateHeight()"></div>
+    <div class="sub">${t('set.height.cur')}: <b id="o10">${ht}</b> cm</div>
+    <div class="space-y-2" id="bmi-container" style="display:none">
+      <div class="sub">${t('set.bmi')}</div>
+      <div><b id="bmi-value">--</b></div>
+      <div id="bmi-info" class="sub"></div>
+    </div>
+  </div>
+  <div class="space-y-2 sect">
+    <div><label class="sub" for="s11">${t('set.lang')}</label><select id="s11"><option value="auto" ${S.lang==='auto'?'selected':''}>${t('set.lang.auto')}</option><option value="it" ${S.lang==='it'?'selected':''}>Italiano</option><option value="en" ${S.lang==='en'?'selected':''}>English</option></select></div>
+  </div>
+  <div class="space-y-2 sect">
+    <button id="info-btn" class="flex justify-between items-center w-full text-left" aria-expanded="false" onclick="toggleInfo()">
+      <span class="sub">${t('set.info')}</span><span id="info-toggle" class="sub">▼</span>
+    </button>
+    <div id="info-details" class="text-xs space-y-1 muted" style="margin-top:0.5rem;display:none">${t('set.info.text')}</div>
+  </div>
+  <button class="btn w-full" onclick="saveSet()">${t('set.save')}</button></div>
+  <div class="card flex gap-2 flex-wrap"><button class="btn2" onclick="exportData()">${t('set.export')}</button><button class="btn2" onclick="printReport()">${t('rep.btn')}</button><button class="btn2" onclick="$('imp').click()">${t('set.import')}</button><input id="imp" type="file" accept="application/json,.json" hidden onchange="importData(this)"><button class="btn2" onclick="clearAll()">${t('set.clear')}</button></div>
+  <div class="card space-y-3">
+  <h3 class="font-semibold text-sm">${t('legal.title')}</h3>
+  <div class="text-xs space-y-2 muted">
+    <p>${t('legal.gpl')}</p>
+    <p>${t('legal.med')}</p>
+    <p>${t('legal.priv')}</p>
+  </div>
+</div>`;
+  calculateBMI();
+}
+function clearAll(){if(!confirm(t('confirm.clear')))return;logs={};S=cleanSet({});const ok=saveState();applyLang();render();if(ok)toast(t('toast.cleared'))}
+function saveSet(){
+  S=cleanSet({...S,lastPeriodDate:$('s1').value,cycleLength:$('s2').value,periodLength:$('s3').value,lutealMode:$('s4').value,lutealManual:$('s5').value,alpha:$('s6').value,confidence:$('s7').value,age:$('s8').value,weight:$('s9').value,height:$('s10').value,lang:$('s11').value});
+  const ok=saveState();applyLang();go('oggi');if(ok)toast(t('toast.recalc'));
+}
+
+function render(){A=E.analyze(logs,S,today);({oggi:renderOggi,calendario:renderCal,diario:renderDiary,stats:renderStats,impost:renderSet})[tab]();document.querySelectorAll('.pill').forEach(p=>{p.tabIndex=0;p.setAttribute('role','button')})}
+document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('pill')){e.preventDefault();e.target.click()}});
+document.addEventListener('visibilitychange',()=>{const n=E.f(new Date());if(!document.hidden&&n!==today){const keep=dDate===today;today=n;if(keep)dDate=n;render()}});
+
+// ---------- Report clinico: stampa nativa del browser -> "Salva come PDF" (nessuna libreria) ----------
+const fdy=s=>fd(s,{day:'numeric',month:'short',year:'numeric'});
+// Giorni di flusso del ciclo: tollera pause fino a 3 giorni (stessa regola usata dal motore per riconoscere l'inizio del ciclo)
+const bleedDays=s=>{let n=0,last=s;for(let i=0;i<14;i++){const d=E.add(s,i);if(logs[d]&&BLEED.includes(logs[d].flow)){n++;last=d}else if(E.diff(d,last)>3)break}return n};
+function bbtSvg(days,a){
+  const pts=days.filter(d=>+logs[d].temp>0).slice(-150).map(d=>[d,+logs[d].temp]);
+  if(pts.length<2)return null;
+  const d0=pts[0][0],d1=pts[pts.length-1][0],tot=Math.max(1,E.diff(d1,d0)),W=700,H=210,l=40,r=10,tp=16,bt=24;
+  const vs=pts.map(q=>q[1]),mn=Math.floor((Math.min(...vs)-.1)*10)/10,mx=Math.ceil((Math.max(...vs)+.1)*10)/10;
+  const X=d=>l+E.diff(d,d0)/tot*(W-l-r),Y=v=>H-bt-(v-mn)/(mx-mn)*(H-tp-bt);
+  let g='';
+  for(let i=0;i<=4;i++){const v=mn+(mx-mn)*i/4;g+=`<line x1="${l}" x2="${W-r}" y1="${Y(v)}" y2="${Y(v)}" stroke="#e3dcee"/><text x="${l-5}" y="${Y(v)+4}" font-size="11" fill="#555" text-anchor="end">${nf(v,2)}</text>`}
+  a.starts.filter(s=>s>=d0&&s<=d1).forEach(s=>{g+=`<line x1="${X(s)}" x2="${X(s)}" y1="${tp}" y2="${H-bt}" stroke="#d81b60" stroke-dasharray="4 3"/>`});
+  a.cycles.map(c=>c.ov).filter(o=>o&&o>=d0&&o<=d1).forEach(o=>{g+=`<line x1="${X(o)}" x2="${X(o)}" y1="${tp}" y2="${H-bt}" stroke="#1b9e77"/>`});
+  g+=`<polyline fill="none" stroke="#5b3fa0" stroke-width="2" points="${pts.map(q=>X(q[0])+','+Y(q[1])).join(' ')}"/>`;
+  pts.forEach(q=>{g+=`<circle cx="${X(q[0])}" cy="${Y(q[1])}" r="2.8" fill="#5b3fa0"/>`});
+  [d0,E.add(d0,Math.round(tot/2)),d1].forEach((d,i)=>{g+=`<text x="${X(d)}" y="${H-6}" font-size="11" fill="#555" text-anchor="${i===0?'start':i===2?'end':'middle'}">${esc(fdy(d))}</text>`});
+  return {svg:`<svg viewBox="0 0 ${W} ${H}" role="img">${g}</svg>`,n:pts.length,mean:vs.reduce((x,y)=>x+y,0)/vs.length,min:Math.min(...vs),max:Math.max(...vs)};
+}
+function buildReport(){
+  const a=E.analyze(logs,S,today),cyc=a.cycles.slice(-12),val=cyc.filter(c=>!c.anomalous),Ls=val.map(c=>c.len);
+  const sum=x=>x.reduce((p,q)=>p+q,0),mean=Ls.length?sum(Ls)/Ls.length:null;
+  const sd=Ls.length>1?Math.sqrt(sum(Ls.map(x=>(x-mean)**2))/(Ls.length-1)):null;
+  const span=Ls.length?Math.max(...Ls)-Math.min(...Ls):null,reg=Ls.length<3?'none':span<=7?'ok':span<=9?'mild':'irr';
+  const lutv=val.map(c=>c.luteal).filter(x=>x>=8&&x<=20),bd=cyc.map(c=>bleedDays(c.start)).filter(x=>x>0);
+  const from=E.add(today,-182),days=Object.keys(logs).filter(d=>d>=from&&d<=today).sort(),na=t('rep.nodata');
+  const sc={};days.forEach(d=>logs[d].symptoms.forEach(s=>{sc[s]=(sc[s]||0)+1}));
+  const syms=Object.entries(sc).sort((x,y)=>y[1]-x[1]).slice(0,10);
+  const md={};days.forEach(d=>{const m=(logs[d].meds||'').trim();if(!m)return;const k=m.toLowerCase();(md[k]=md[k]||{x:m,n:0,last:d}).n++;md[k].last=d});
+  const meds=Object.values(md).sort((x,y)=>y.n-x.n).slice(0,8),bb=bbtSvg(days,a);
+  const w=parseFloat(S.weight),ht=parseFloat(S.height),bmi=w>0&&ht>0?w/((ht/100)**2):null,no=t('rep.na');
+  const kv=(k,v)=>`<tr><th>${esc(k)}</th><td>${v}</td></tr>`;
+  const u=t('u.days');
+  const rows=cyc.slice().reverse().map(c=>`<tr><td>${esc(fdy(c.start))}</td><td>${c.len} ${u}</td><td>${bleedDays(c.start)||'–'}</td><td>${c.ov?esc(fd(c.ov)+(c.method?' ('+t('method.'+c.method)+')':'')):'–'}</td><td>${c.luteal?c.luteal+' '+u:'–'}</td><td>${c.anomalous?esc(t('rep.anom')):''}</td></tr>`).join('');
+  $('report').innerHTML=`<h1>${esc(t('rep.title'))}</h1><p class="rp-sub">LunaCycle · ${esc(t('rep.gen',{d:fdy(today),a:fdy(from),b:fdy(today)}))}</p>
+  <div class="rp-sec"><h2>${esc(t('rep.profile'))}</h2><table class="rp-kv">${kv(t('rep.age'),S.age===''?esc(no):S.age+' '+esc(t('u.years')))}${kv(t('rep.weight'),S.weight===''?esc(no):S.weight+' kg')}${kv(t('rep.height'),S.height===''?esc(no):S.height+' cm')}${bmi?kv(t('rep.bmi'),nf(bmi)):''}</table></div>
+  <div class="rp-sec"><h2>${esc(t('rep.sum',{n:cyc.length}))}</h2><table class="rp-kv">
+    ${kv(t('rep.cycles'),cyc.length)}${kv(t('rep.valid'),val.length)}
+    ${kv(t('rep.mean'),mean===null?esc(na):nf(mean)+' '+u)}${kv(t('rep.range'),Ls.length?Math.min(...Ls)+' – '+Math.max(...Ls)+' '+u:esc(na))}
+    ${kv(t('rep.sd'),sd===null?esc(na):nf(sd,2)+' '+u)}${kv(t('rep.reg'),'<b>'+esc(t('rep.reg.'+reg))+'</b>')}${kv(t('rep.out'),cyc.length?cyc.filter(c=>c.len<24||c.len>38).length:esc(na))}
+    ${kv(t('rep.bleed'),bd.length?nf(sum(bd)/bd.length)+' '+u:esc(na))}${kv(t('rep.lut'),lutv.length?nf(sum(lutv)/lutv.length)+' '+u+' (n='+lutv.length+')':esc(na))}
+    ${kv(t('rep.last'),a.pred?esc(fdy(a.pred.cur)):esc(na))}${kv(t('rep.next'),a.pred?esc(fdy(a.pred.next)):esc(na))}</table><p class="rp-sub" style="margin-top:3pt">${esc(t('rep.reg.note'))}</p></div>
+  <div class="rp-sec"><h2>${esc(t('rep.detail'))}</h2>${rows?`<table><tr><th>${esc(t('rep.c.start'))}</th><th>${esc(t('rep.c.len'))}</th><th>${esc(t('rep.c.bleed'))}</th><th>${esc(t('rep.c.ov'))}</th><th>${esc(t('rep.c.lut'))}</th><th>${esc(t('rep.c.note'))}</th></tr>${rows}</table>`:`<p>${esc(t('rep.nocycles'))}</p>`}</div>
+  <div class="rp-sec"><h2>${esc(t('rep.bbt'))}</h2>${bb?bb.svg+`<p class="rp-sub">${esc(t('rep.bbt.stats',{n:bb.n,m:nf(bb.mean,2),a:nf(bb.min,2),b:nf(bb.max,2)}))}<br>${esc(t('rep.bbt.leg'))}</p>`:`<p>${esc(t('rep.bbt.none'))}</p>`}</div>
+  <div class="rp-two"><div class="rp-sec"><h2>${esc(t('rep.sym'))}</h2>${syms.length?`<table><tr><th>${esc(t('rep.sym.col'))}</th><th>${esc(t('rep.sym.days'))}</th></tr>${syms.map(s=>`<tr><td>${esc(t('sym.'+s[0]))}</td><td>${s[1]} (${Math.round(s[1]/days.length*100)}%)</td></tr>`).join('')}</table><p class="rp-sub" style="margin-top:3pt">${esc(t('rep.sym.of',{n:days.length}))}</p>`:`<p>${esc(t('rep.sym.none'))}</p>`}</div>
+  <div class="rp-sec"><h2>${esc(t('rep.meds'))}</h2>${meds.length?`<table>${meds.map(m=>`<tr><td>${esc(m.x)}</td><td>${esc(t('rep.meds.times',{n:m.n,d:fd(m.last)}))}</td></tr>`).join('')}</table>`:`<p>${esc(t('rep.meds.none'))}</p>`}</div></div>
+  <p class="rp-disc">${esc(t('rep.disc'))}</p>`;
+}
+let _rt0;
+window.addEventListener('beforeprint',()=>{buildReport();if(_rt0===undefined)_rt0=document.title;document.title='LunaCycle-'+t('rep.file')+'-'+today});
+window.addEventListener('afterprint',()=>{if(_rt0!==undefined){document.title=_rt0;_rt0=undefined}$('report').innerHTML=''});
+function printReport(){buildReport();setTimeout(()=>window.print(),30)}
+
+// Service Worker Registration
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{navigator.serviceWorker.register('./service-worker.js').catch(e=>console.log('ServiceWorker registration failed: ',e))});
+}
+
+applyLang();
+go('oggi');
+</script>
+</body>
+</html>
